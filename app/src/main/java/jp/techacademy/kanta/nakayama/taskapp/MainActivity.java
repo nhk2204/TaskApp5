@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
         //動くかどうかの確認用
         if(mTaskRealmResults.size()==0){
-            addTestTasks();
+            //addTestTasks();
         }
         reloadListView();
     }
