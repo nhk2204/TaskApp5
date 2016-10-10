@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //「戻る」ボタンを押したときの動作
-        Button returnButton=(Button)findViewById(R.id.return_button);
+        /*Button returnButton=(Button)findViewById(R.id.return_button);
         returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 //Spinnerの位置を先頭のものに戻す（先頭は必ず空欄が入る）。
                 mSpinner.setSelection(0);
             }
-        });
+        });*/
 
         //「+」ボタンを押したときの動作（タスクの追加）
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -153,9 +153,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //動くかどうかの確認用
-        if(mTaskRealmResults.size()==0){
-            //addTestTasks();
-        }
+        /*if(mTaskRealmResults.size()==0){
+            addTestTasks();
+        }*/
         reloadListView();
     }
 
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //Spinnerの先頭に空欄を入れる。
         //「戻る」で戻った場合にここを選ばせるため
-        adapter.add("");
+        adapter.add("全てのデータを表示");
         //2段目に「カテゴリなしを検索」を設定。
         adapter.add("カテゴリなしを検索");
         for (int i = 0; i < mCategoryRealmResults.size(); i++) {
@@ -200,7 +200,39 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Task> searchTaskArrayList=new ArrayList<>();
         Spinner searchCategoryEditText=(Spinner)findViewById(R.id.search_text);
         if(searchCategoryEditText.getSelectedItem()!=null) {
-            if(searchCategoryEditText.getSelectedItemPosition()!=1) {
+            if(searchCategoryEditText.getSelectedItemPosition()==0) {
+                //空欄を選択した際はすべてのデータを表示する。
+                for (int i = 0; i < mTaskRealmResults.size(); i++) {
+                    Task task = new Task();
+
+                    task.setId(mTaskRealmResults.get(i).getId());
+                    task.setTitle(mTaskRealmResults.get(i).getTitle());
+                    task.setContents(mTaskRealmResults.get(i).getContents());
+                    task.setCategory(mTaskRealmResults.get(i).getCategory());
+                    task.setDate(mTaskRealmResults.get(i).getDate());
+
+                    searchTaskArrayList.add(task);
+                }
+            }else if(searchCategoryEditText.getSelectedItemPosition()==1){
+                //カテゴリなしを検索する。
+                for (int i = 0; i < mTaskRealmResults.size(); i++) {
+                    //Log.d("AAA","AAA");
+                    Task B = mTaskRealmResults.get(i);
+                    Category A = B.getCategory();
+                    if (A == null) {
+                        Task task = new Task();
+
+                        task.setId(mTaskRealmResults.get(i).getId());
+                        task.setTitle(mTaskRealmResults.get(i).getTitle());
+                        task.setContents(mTaskRealmResults.get(i).getContents());
+                        task.setCategory(mTaskRealmResults.get(i).getCategory());
+                        task.setDate(mTaskRealmResults.get(i).getDate());
+
+                        searchTaskArrayList.add(task);
+
+                    }
+                }
+            }else{
                 String searchCategory = searchCategoryEditText.getSelectedItem().toString();
 
                 for (int i = 0; i < mTaskRealmResults.size(); i++) {
@@ -220,25 +252,6 @@ public class MainActivity extends AppCompatActivity {
 
                             searchTaskArrayList.add(task);
                         }
-                    }
-                }
-            }else{
-                //カテゴリなしを検索する。
-                for (int i = 0; i < mTaskRealmResults.size(); i++) {
-                    //Log.d("AAA","AAA");
-                    Task B = mTaskRealmResults.get(i);
-                    Category A = B.getCategory();
-                    if (A == null) {
-                        Task task = new Task();
-
-                        task.setId(mTaskRealmResults.get(i).getId());
-                        task.setTitle(mTaskRealmResults.get(i).getTitle());
-                        task.setContents(mTaskRealmResults.get(i).getContents());
-                        task.setCategory(mTaskRealmResults.get(i).getCategory());
-                        task.setDate(mTaskRealmResults.get(i).getDate());
-
-                        searchTaskArrayList.add(task);
-
                     }
                 }
             }
