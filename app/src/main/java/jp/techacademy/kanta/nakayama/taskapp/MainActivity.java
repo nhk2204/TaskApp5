@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 reloadListView();
+                //Spinnerの位置を先頭のものに戻す（先頭は必ず空欄が入る）。
+                mSpinner.setSelection(0);
             }
         });
 
@@ -178,6 +180,11 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Category> categoryArrayList = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //Spinnerの先頭に空欄を入れる。
+        //「戻る」で戻った場合にここを選ばせるため
+        adapter.add("");
+        //2段目に「カテゴリなしを検索」を設定。
+        adapter.add("カテゴリなしを検索");
         for (int i = 0; i < mCategoryRealmResults.size(); i++) {
             Category category = new Category();
 
@@ -192,30 +199,53 @@ public class MainActivity extends AppCompatActivity {
     private void reloadSearchListView(){
         ArrayList<Task> searchTaskArrayList=new ArrayList<>();
         Spinner searchCategoryEditText=(Spinner)findViewById(R.id.search_text);
-        String searchCategory=searchCategoryEditText.getSelectedItem().toString();
+        if(searchCategoryEditText.getSelectedItem()!=null) {
+            if(searchCategoryEditText.getSelectedItemPosition()!=1) {
+                String searchCategory = searchCategoryEditText.getSelectedItem().toString();
 
-        for(int i=0;i<mTaskRealmResults.size();i++){
-            //Log.d("AAA","AAA");
-            Task B=mTaskRealmResults.get(i);
-            Category A=B.getCategory();
-            if(A!=null) {
-                String compareCategory = A.getCategoryName();
-                if (compareCategory.equals(searchCategory)) {
-                    Task task = new Task();
+                for (int i = 0; i < mTaskRealmResults.size(); i++) {
+                    //Log.d("AAA","AAA");
+                    Task B = mTaskRealmResults.get(i);
+                    Category A = B.getCategory();
+                    if (A != null) {
+                        String compareCategory = A.getCategoryName();
+                        if (compareCategory.equals(searchCategory)) {
+                            Task task = new Task();
 
-                    task.setId(mTaskRealmResults.get(i).getId());
-                    task.setTitle(mTaskRealmResults.get(i).getTitle());
-                    task.setContents(mTaskRealmResults.get(i).getContents());
-                    task.setCategory(mTaskRealmResults.get(i).getCategory());
-                    task.setDate(mTaskRealmResults.get(i).getDate());
+                            task.setId(mTaskRealmResults.get(i).getId());
+                            task.setTitle(mTaskRealmResults.get(i).getTitle());
+                            task.setContents(mTaskRealmResults.get(i).getContents());
+                            task.setCategory(mTaskRealmResults.get(i).getCategory());
+                            task.setDate(mTaskRealmResults.get(i).getDate());
 
-                    searchTaskArrayList.add(task);
+                            searchTaskArrayList.add(task);
+                        }
+                    }
+                }
+            }else{
+                //カテゴリなしを検索する。
+                for (int i = 0; i < mTaskRealmResults.size(); i++) {
+                    //Log.d("AAA","AAA");
+                    Task B = mTaskRealmResults.get(i);
+                    Category A = B.getCategory();
+                    if (A == null) {
+                        Task task = new Task();
+
+                        task.setId(mTaskRealmResults.get(i).getId());
+                        task.setTitle(mTaskRealmResults.get(i).getTitle());
+                        task.setContents(mTaskRealmResults.get(i).getContents());
+                        task.setCategory(mTaskRealmResults.get(i).getCategory());
+                        task.setDate(mTaskRealmResults.get(i).getDate());
+
+                        searchTaskArrayList.add(task);
+
+                    }
                 }
             }
+            mTaskAdapter.setTaskArrayList(searchTaskArrayList);
+            mListView.setAdapter(mTaskAdapter);
+            mTaskAdapter.notifyDataSetChanged();
         }
-        mTaskAdapter.setTaskArrayList(searchTaskArrayList);
-        mListView.setAdapter(mTaskAdapter);
-        mTaskAdapter.notifyDataSetChanged();
     }
 
     protected void onDestroy(){
@@ -233,35 +263,49 @@ public class MainActivity extends AppCompatActivity {
         category2.setCategoryId(1);
         category2.setCategoryName("OSUMI");
 
-        Category category3=new Category();
-        category3.setCategoryId(2);
-        category3.setCategoryName("OUCHI");
-
-        Category category4=new Category();
-        category4.setCategoryId(3);
-        category4.setCategoryName("KIHARA");
-
         Task task=new Task();
-        task.setTitle("Test");
-        task.setContents("Task for test");
+        task.setTitle("HANAKO");
+        task.setContents("NAKAYAMA");
         task.setDate(new Date());
         task.setCategory(category);
         task.setId(0);
 
         Task task2=new Task();
-        task2.setTitle("Test #2");
-        task2.setContents("Task#2 for test");
+        task2.setTitle("KANTA");
+        task2.setContents("NAKAYAMA");
         task2.setDate(new Date());
-        task2.setCategory(category2);
+        task2.setCategory(category);
         task2.setId(1);
+
+        Task task3=new Task();
+        task3.setTitle("MIDORI");
+        task3.setContents("OSUMI");
+        task3.setDate(new Date());
+        task3.setCategory(category2);
+        task3.setId(2);
+
+        Task task4=new Task();
+        task4.setTitle("YASUHIKO");
+        task4.setContents("NAKAYAMA");
+        task4.setDate(new Date());
+        task4.setCategory(category);
+        task4.setId(3);
+
+        Task task5=new Task();
+        task5.setTitle("PONSHI");
+        task5.setContents("(DOG)");
+        task5.setDate(new Date());
+        //task5.setCategory(category);
+        task5.setId(4);
 
         mRealm.beginTransaction();
         mRealm.copyToRealmOrUpdate(task);
         mRealm.copyToRealmOrUpdate(task2);
+        mRealm.copyToRealmOrUpdate(task3);
+        mRealm.copyToRealmOrUpdate(task4);
+        mRealm.copyToRealmOrUpdate(task5);
         mRealm.copyToRealmOrUpdate(category);
         mRealm.copyToRealmOrUpdate(category2);
-        mRealm.copyToRealmOrUpdate(category3);
-        mRealm.copyToRealmOrUpdate(category4);
         mRealm.commitTransaction();
     }
 }

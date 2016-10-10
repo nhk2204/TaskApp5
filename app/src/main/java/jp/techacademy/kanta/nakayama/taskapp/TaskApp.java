@@ -13,7 +13,7 @@ public class TaskApp extends Application{
     public void onCreate(){
         super.onCreate();
         RealmConfiguration realmConfiguration=new RealmConfiguration.Builder(this).build();
-        //Realm.deleteRealm(realmConfiguration);//コンフィグを削除
+        Realm.deleteRealm(realmConfiguration);//コンフィグを削除
         Realm.setDefaultConfiguration(realmConfiguration);
     }
 }
